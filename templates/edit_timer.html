@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Edit Timer</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<h1>Edit Timer: {{ timer }}</h1>
+<form method="post">
+    OnBootSec: <input name="onboot" value="{{ vals['OnBootSec'] }}"><br>
+    OnUnitActiveSec: <input name="onactive" value="{{ vals['OnUnitActiveSec'] }}"><br>
+    <button type="submit">Update Timer</button>
+</form>
+<p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+</body>
+</html>
