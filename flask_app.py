@@ -12,6 +12,13 @@ ACCOUNTS_FILE = os.path.join(GMAIL_MANAGER_DIR, 'accounts.txt')
 LOG_FILE = os.path.join(GMAIL_MANAGER_DIR, 'gmail_manager.log')
 EMAIL_SCAN_LOG_FILE = os.path.join(GMAIL_MANAGER_DIR, 'email_scan.log')
 
+SERVICE_NAMES = ['gmail_manager', 'email_scanner']
+TIMER_PATHS = {
+    'gmail_manager': '/etc/systemd/system/gmail_manager.timer',
+    'email_scanner': '/etc/systemd/system/email_scanner.timer'
+}
+SERVICE_UNITS = {s: f"{s}.service" for s in SERVICE_NAMES}
+
 def load_account_list():
     if not os.path.exists(ACCOUNTS_FILE):
         return []
@@ -42,16 +49,83 @@ def save_list(filename, items):
 
 def ensure_account_files(account_dir):
     os.makedirs(account_dir, exist_ok=True)
-    for fname in ["scan_senders.txt", "exception_do_not_delete.txt"]:
+    for fname in ["scan_senders.txt", "exception_do_not_delete.txt", "reply_message.txt", "del_emails_record.txt"]:
         path = os.path.join(account_dir, fname)
         if not os.path.exists(path):
             with open(path, 'w') as f:
                 pass
 
+def load_reply_message(account_dir):
+    file = os.path.join(account_dir, 'reply_message.txt')
+    if not os.path.exists(file):
+        return ''
+    with open(file) as f:
+        return f.read()
+
+def save_reply_message(account_dir, message):
+    file = os.path.join(account_dir, 'reply_message.txt')
+    with open(file, 'w') as f:
+        f.write(message.strip())
+
+def count_processed(account_dir):
+    file = os.path.join(account_dir, 'del_emails_record.txt')
+    if not os.path.exists(file):
+        return 0
+    with open(file) as f:
+        return sum(int(line.split(',')[1]) for line in f if ',' in line)
+
+def get_next_last_run(timer_unit):
+    try:
+        out = subprocess.check_output(['systemctl', 'list-timers', timer_unit]).decode()
+        lines = out.strip().split('\n')
+        if len(lines) < 2:
+            return '', ''
+        parts = lines[1].split()
+        return parts[1], parts[2]  # Next, Last
+    except Exception:
+        return '', ''
+
+def parse_timer_file(timer_path):
+    vals = {'OnBootSec': '', 'OnUnitActiveSec': ''}
+    if not os.path.exists(timer_path):
+        return vals
+    with open(timer_path) as f:
+        for line in f:
+            if line.startswith('OnBootSec'):
+                vals['OnBootSec'] = line.split('=')[1].strip()
+            if line.startswith('OnUnitActiveSec'):
+                vals['OnUnitActiveSec'] = line.split('=')[1].strip()
+    return vals
+
+def update_timer_file(timer_path, onboot, onactive):
+    out = []
+    with open(timer_path) as f:
+        for line in f:
+            if line.startswith('OnBootSec'):
+                out.append(f'OnBootSec={onboot}\n')
+            elif line.startswith('OnUnitActiveSec'):
+                out.append(f'OnUnitActiveSec={onactive}\n')
+            else:
+                out.append(line)
+    with open(timer_path, 'w') as f:
+        f.writelines(out)
+    subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
+    subprocess.call(['sudo', 'systemctl', 'restart', os.path.basename(timer_path)])
+
+def service_action(service, action):
+    return subprocess.call(['sudo', 'systemctl', action, service])
+
 @app.route('/')
 def dashboard():
     accounts = load_account_list()
-    return render_template('dashboard.html', accounts=accounts)
+    account_data = []
+    for idx, acc in enumerate(accounts):
+        ensure_account_files(acc)
+        next_run, last_run = get_next_last_run('gmail_manager.timer')
+        processed = count_processed(acc)
+        account_data.append({'path': acc, 'index': idx, 'processed': processed})
+    timers_info = {s: parse_timer_file(TIMER_PATHS[s]) for s in SERVICE_NAMES}
+    return render_template('dashboard.html', accounts=accounts, account_data=account_data, timers_info=timers_info)
 
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts():
@@ -168,6 +242,20 @@ def exceptions(acc_index):
     accounts = load_account_list()
     return render_template('exceptions.html', exceptions=exceptions, acc_index=acc_index, accounts=accounts, account_dir=account_dir)
 
+@app.route('/accounts/<int:acc_index>/reply', methods=['GET', 'POST'])
+def reply_message(acc_index):
+    account_dir = account_path(acc_index)
+    if not account_dir:
+        flash('Invalid account.')
+        return redirect(url_for('accounts'))
+    ensure_account_files(account_dir)
+    msg = load_reply_message(account_dir)
+    if request.method == 'POST':
+        msg = request.form['reply_message']
+        save_reply_message(account_dir, msg)
+        flash('Reply message saved.')
+    return render_template('reply_message.html', reply_message=msg, acc_index=acc_index, account_dir=account_dir)
+
 @app.route('/run/<script>')
 def run_script(script):
     if script == 'gmail_manager':
@@ -176,6 +264,35 @@ def run_script(script):
     elif script == 'email_scanner':
         subprocess.Popen(['bash', os.path.join(GMAIL_MANAGER_DIR, 'run_email_scanner.sh')])
         flash('Email Scanner script triggered.')
+    return redirect(url_for('dashboard'))
+
+@app.route('/timers/<timer>', methods=['GET', 'POST'])
+def edit_timer(timer):
+    if timer not in TIMER_PATHS:
+        flash('Invalid timer.')
+        return redirect(url_for('dashboard'))
+    timer_path = TIMER_PATHS[timer]
+    vals = parse_timer_file(timer_path)
+    if request.method == 'POST':
+        onboot = request.form['onboot']
+        onactive = request.form['onactive']
+        update_timer_file(timer_path, onboot, onactive)
+        flash('Timer updated.')
+        vals = parse_timer_file(timer_path)
+    return render_template('edit_timer.html', timer=timer, vals=vals)
+
+@app.route('/service/<service>/<action>')
+def service_control(service, action):
+    valid_actions = ['start', 'stop', 'restart', 'status']
+    if service not in SERVICE_NAMES or action not in valid_actions:
+        flash('Invalid service or action.')
+        return redirect(url_for('dashboard'))
+    unit = SERVICE_UNITS[service]
+    if action == 'status':
+        out = subprocess.check_output(['sudo', 'systemctl', 'status', unit]).decode()
+        return render_template('service_status.html', service=service, status=out)
+    service_action(unit, action)
+    flash(f'{service} {action} command sent.')
     return redirect(url_for('dashboard'))
 
 @app.route('/logs/<logfile>')
@@ -205,3 +322,4 @@ def download_log(logfile):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8181, debug=True)
+
