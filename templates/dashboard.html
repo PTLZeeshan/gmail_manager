@@ -8,8 +8,6 @@
     <h1>📬 Gmail Manager Dashboard</h1>
     <p>
         <a href="{{ url_for('accounts') }}">Manage Accounts</a> | 
-        <a href="{{ url_for('keywords') }}">Edit Keywords</a> | 
-        <a href="{{ url_for('exceptions') }}">Edit Exceptions</a> |
         <a href="{{ url_for('logs', logfile='manager') }}">Gmail Manager Log</a> | 
         <a href="{{ url_for('logs', logfile='scanner') }}">Email Scanner Log</a>
     </p>
@@ -17,7 +15,12 @@
     <h2>Accounts</h2>
     <ul>
         {% for acc in accounts %}
-            <li>{{ acc }}</li>
+            <li>
+                <b>{{ acc }}</b>
+                <a href="{{ url_for('keywords', acc_index=loop.index0) }}">Keywords/Blocked Senders</a> |
+                <a href="{{ url_for('exceptions', acc_index=loop.index0) }}">Exceptions</a> |
+                <a href="{{ url_for('start_auth', acc_index=loop.index0) }}">OAuth</a>
+            </li>
         {% else %}
             <li>No accounts found. <a href="{{ url_for('accounts') }}">Add one</a>.</li>
         {% endfor %}
