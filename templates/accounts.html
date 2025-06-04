@@ -7,17 +7,18 @@
 <body>
     <h1>Manage Accounts</h1>
     <form method="post">
-        <input type="text" name="new_account" placeholder="New account directory (e.g. /home/username/gmail_manager/account4)">
+        <input type="text" name="new_account" placeholder="Full path (e.g. /home/user/gmail_manager/account4)">
         <button type="submit">Add Account</button>
     </form>
     <ul>
         {% for acc in accounts %}
             <li>
-                {{ acc }} 
+                <b>{{ acc }}</b>
                 <form action="{{ url_for('upload_credentials', acc_index=loop.index0) }}" method="post" enctype="multipart/form-data" style="display:inline;">
                     <input type="file" name="credentials" required>
                     <button type="submit">Upload credentials.json</button>
                 </form>
+                <a href="{{ url_for('start_auth', acc_index=loop.index0) }}">Authenticate (OAuth)</a>
             </li>
         {% endfor %}
     </ul>
