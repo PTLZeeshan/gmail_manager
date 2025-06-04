@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Edit Reply Message</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<h1>Edit Reply Message (Auto-reply template)</h1>
+<form method="post">
+  <textarea name="reply_message" rows="12" cols="80">{{ reply_message }}</textarea><br>
+  <button type="submit">Save</button>
+</form>
+<p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+</body>
+</html>
