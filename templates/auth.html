@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Google Account Authentication</title></head>
+<body>
+<h1>Authenticate Google Account</h1>
+<ol>
+  <li>Click the link below to open the Google authentication page.</li>
+  <li>Authorize the app and copy the code provided by Google.</li>
+  <li>Paste it into the form below and submit.</li>
+</ol>
+<p>
+  <a href="{{ auth_url }}" target="_blank">Click here to authenticate with Google</a>
+</p>
+<form method="post" action="{{ url_for('finish_auth', acc_index=acc_index) }}">
+  <label>Paste authorization code:</label><br>
+  <input type="text" name="auth_code" style="width: 400px">
+  <button type="submit">Submit</button>
+</form>
+</body>
+</html>
