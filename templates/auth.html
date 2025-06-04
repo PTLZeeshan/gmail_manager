@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head><title>Google Account Authentication</title></head>
-<body>
+{% extends "base.html" %}
+{% block title %}Google Account Authentication{% endblock %}
+{% block content %}
 <h1>Authenticate Google Account</h1>
 <ol>
   <li>Click the link below to open the Google authentication page.</li>
@@ -16,5 +15,5 @@
   <input type="text" name="auth_code" style="width: 400px">
   <button type="submit">Submit</button>
 </form>
-</body>
-</html>
+{% endblock %}
+
