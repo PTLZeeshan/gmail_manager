@@ -7,7 +7,7 @@ body {
 h1, h2 {
     color: #003366;
 }
-form, ul {
+form, ul, table {
     margin-bottom: 1.5rem;
 }
 button {
@@ -22,7 +22,7 @@ button {
 button:hover {
     background: #003366;
 }
-input[type="text"] {
+input[type="text"], textarea {
     padding: 6px;
     border: 1px solid #bbb;
     border-radius: 3px;
@@ -44,4 +44,13 @@ textarea {
     border: 1px solid #bbb;
     border-radius: 4px;
     padding: 12px;
+}
+table {
+    background: #fff;
+    border-collapse: collapse;
+    width: 100%;
+}
+td, th {
+    padding: 10px;
+    border: 1px solid #c0c0c0;
 }
