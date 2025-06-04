@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Gmail Manager Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
 <h1>📬 Gmail Manager Dashboard</h1>
-<p>
-    <a href="{{ url_for('accounts') }}">Manage Accounts</a> | 
-    <a href="{{ url_for('logs', logfile='manager') }}">Gmail Manager Log</a> | 
-    <a href="{{ url_for('logs', logfile='scanner') }}">Email Scanner Log</a>
-</p>
-<hr>
 <h2>Accounts Status</h2>
 <table>
     <tr><th>Account Path</th><th>Processed</th><th>Actions</th></tr>
@@ -50,14 +40,4 @@
         </li>
     {% endfor %}
 </ul>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class="flashes">
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-</body>
-</html>
+{% endblock %}
