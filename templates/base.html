@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Gmail Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+  <div style="float:right;">
+    <button id="darkModeBtn" type="button">🌙 Dark Mode</button>
+  </div>
+  {% block nav %}
+    <p>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      | <a href="{{ url_for('accounts') }}">Accounts</a>
+      | <a href="{{ url_for('logs', logfile='manager') }}">Gmail Manager Log</a>
+      | <a href="{{ url_for('logs', logfile='scanner') }}">Email Scanner Log</a>
+    </p>
+    <hr>
+  {% endblock %}
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+  <script>
+  function setDarkMode(on) {
+      document.body.classList.toggle('dark', on);
+      document.getElementById('darkModeBtn').innerText = on ? "☀️ Light Mode" : "🌙 Dark Mode";
+  }
+  function saveDarkMode(on) {
+      localStorage.setItem('darkMode', on ? "1" : "");
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+      let dark = localStorage.getItem('darkMode') === "1";
+      setDarkMode(dark);
+      document.getElementById('darkModeBtn').onclick = function() {
+          dark = !dark;
+          setDarkMode(dark);
+          saveDarkMode(dark);
+      }
+  });
+  </script>
+</body>
+</html>
