@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +22,12 @@
         </ul>
         <button type="submit" name="delete">Delete Selected</button>
     </form>
-    <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+    <p>
+      <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+      |
+      {% for a in accounts %}
+        <a href="{{ url_for('exceptions', acc_index=loop.index0) }}">Switch to {{ a }}</a>
+      {% endfor %}
+    </p>
 </body>
 </html>
