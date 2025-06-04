@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Logs</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+      textarea { width: 98%; height: 480px; }
+    </style>
+</head>
+<body>
+    <h1>Log: {{ logtype }}</h1>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a> | 
+    <a href="{{ url_for('download_log', logfile=logtype) }}">Download Log</a>
+    <hr>
+    <textarea readonly>{{ log }}</textarea>
+</body>
+</html>

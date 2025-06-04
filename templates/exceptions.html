@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Exceptions</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Edit Exception List (Never Delete)</h1>
+    <form method="post">
+        <input type="text" name="exception" placeholder="Add new exception email">
+        <button type="submit" name="add">Add</button>
+    </form>
+    <form method="post">
+        <ul>
+        {% for e in exceptions %}
+            <li>
+                <input type="checkbox" name="del" value="{{ e }}">
+                {{ e }}
+            </li>
+        {% endfor %}
+        </ul>
+        <button type="submit" name="delete">Delete Selected</button>
+    </form>
+    <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+</body>
+</html>

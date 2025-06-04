@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Keywords</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Edit Keywords & Blocked Senders</h1>
+    <form method="post">
+        <input type="text" name="keyword" placeholder="Add new keyword or sender">
+        <button type="submit" name="add">Add</button>
+    </form>
+    <form method="post">
+        <ul>
+        {% for k in keywords %}
+            <li>
+                <input type="checkbox" name="del" value="{{ k }}">
+                {{ k }}
+            </li>
+        {% endfor %}
+        </ul>
+        <button type="submit" name="delete">Delete Selected</button>
+    </form>
+    <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+</body>
+</html>

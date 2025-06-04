@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gmail Manager Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>📬 Gmail Manager Dashboard</h1>
+    <p>
+        <a href="{{ url_for('accounts') }}">Manage Accounts</a> | 
+        <a href="{{ url_for('keywords') }}">Edit Keywords</a> | 
+        <a href="{{ url_for('exceptions') }}">Edit Exceptions</a> |
+        <a href="{{ url_for('logs', logfile='manager') }}">Gmail Manager Log</a> | 
+        <a href="{{ url_for('logs', logfile='scanner') }}">Email Scanner Log</a>
+    </p>
+    <hr>
+    <h2>Accounts</h2>
+    <ul>
+        {% for acc in accounts %}
+            <li>{{ acc }}</li>
+        {% else %}
+            <li>No accounts found. <a href="{{ url_for('accounts') }}">Add one</a>.</li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <h2>Manual Actions</h2>
+    <form action="{{ url_for('run_script', script='gmail_manager') }}">
+        <button type="submit">Run Gmail Manager Now</button>
+    </form>
+    <form action="{{ url_for('run_script', script='email_scanner') }}">
+        <button type="submit">Run Email Scanner Now</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

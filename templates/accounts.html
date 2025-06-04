@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Accounts</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Manage Accounts</h1>
+    <form method="post">
+        <input type="text" name="new_account" placeholder="New account directory (e.g. /home/username/gmail_manager/account4)">
+        <button type="submit">Add Account</button>
+    </form>
+    <ul>
+        {% for acc in accounts %}
+            <li>
+                {{ acc }} 
+                <form action="{{ url_for('upload_credentials', acc_index=loop.index0) }}" method="post" enctype="multipart/form-data" style="display:inline;">
+                    <input type="file" name="credentials" required>
+                    <button type="submit">Upload credentials.json</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
