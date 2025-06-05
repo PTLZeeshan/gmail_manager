@@ -1,17 +1,19 @@
 :root {
-    --bg: #f4f6fa;
+    --bg: #f6f8fa;
     --text: #222;
-    --primary: #003366;
+    --primary: #004cff;
     --button: #0055cc;
     --button-hover: #003366;
     --card-bg: #fff;
-    --border: #c0c0c0;
-    --flash: #b30000;
+    --border: #d6d6e0;
+    --flash: #d73737;
     --input-bg: #fff;
+    --shadow: 0 2px 14px 0 #d3d7f3;
+    --mono: 'Roboto Mono', monospace;
 }
 
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     margin: 0;
@@ -21,42 +23,48 @@ body {
 
 h1, h2 {
     color: var(--primary);
-    margin-bottom: 0.75em;
+    margin-bottom: 0.8em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
 }
 
 form, ul, table {
     margin-bottom: 1.5rem;
 }
 
-button {
+button, .btn {
     background: var(--button);
-    color: white;
+    color: #fff;
     border: none;
-    padding: 7px 18px;
+    padding: 8px 22px;
     margin-left: 4px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.18s, color 0.18s;
     font-size: 1em;
-    box-shadow: 0 2px 8px rgba(20, 55, 90, 0.05);
+    font-family: 'Inter', Arial, sans-serif;
+    box-shadow: var(--shadow);
+    font-weight: 600;
+    letter-spacing: 0.03em;
 }
-button:hover, button:focus {
+button:hover, .btn:hover, button:focus {
     background: var(--button-hover);
     color: #fff;
     outline: none;
 }
 
 input[type="text"], input[type="file"], textarea, select {
-    padding: 8px;
-    border: 1px solid #bbb;
-    border-radius: 3px;
+    padding: 10px;
+    border: 1.5px solid #c6cbe0;
+    border-radius: 4px;
     background: var(--input-bg);
     color: var(--text);
     font-size: 1em;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     box-sizing: border-box;
     width: 100%;
-    max-width: 520px;
+    max-width: 540px;
+    box-shadow: var(--shadow);
 }
 input[type="file"] {
     background: none;
@@ -69,7 +77,7 @@ ul {
     padding-left: 0;
 }
 li {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .flashes {
@@ -77,17 +85,20 @@ li {
     margin-top: 12px;
     padding-left: 0;
     list-style: none;
+    font-weight: 600;
+    font-size: 1.05em;
 }
 
-textarea {
+textarea, .log-output {
+    font-family: var(--mono);
     font-size: 1em;
     background: var(--card-bg);
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    padding: 12px;
+    border: 1px solid #b7bbce;
+    border-radius: 5px;
+    padding: 14px;
     width: 98%;
     resize: vertical;
-    min-height: 130px;
+    min-height: 140px;
 }
 
 table {
@@ -96,53 +107,65 @@ table {
     width: 100%;
     font-size: 1em;
     margin-bottom: 2em;
+    box-shadow: var(--shadow);
+    border-radius: 7px;
+    overflow: hidden;
 }
 td, th {
-    padding: 12px 14px;
+    padding: 13px 15px;
     border: 1px solid var(--border);
     text-align: left;
 }
 th {
-    background: #e4e8f0;
+    background: #e9eefb;
     font-weight: bold;
+    letter-spacing: 0.03em;
 }
 
 a {
-    color: var(--button);
+    color: var(--primary);
     text-decoration: none;
     margin-right: 10px;
-    transition: color 0.2s;
+    transition: color 0.18s;
+    font-weight: 500;
 }
 a:hover {
     color: var(--button-hover);
     text-decoration: underline;
 }
 
-pre {
-    background: #f5f7fa;
-    padding: 1em;
-    border-radius: 6px;
-    border: 1px solid #e3e3e3;
+pre, .log-output {
+    background: #252a34;
+    color: #f5f6fa;
+    border: 1px solid #161a21;
+    border-radius: 7px;
     overflow-x: auto;
     font-size: 1em;
+    padding: 16px;
 }
 
-/* Dark Mode Styles */
+@media (max-width: 700px) {
+    body { padding: 0.5rem; }
+    h1 { font-size: 1.25em; }
+    table, pre, textarea { font-size: 0.95em; }
+}
+
 body.dark {
     --bg: #181a1b;
     --text: #f5f6fa;
     --primary: #65bfff;
-    --button: #222e3a;
-    --button-hover: #488cff;
-    --card-bg: #23272a;
+    --button: #26304b;
+    --button-hover: #5e95f5;
+    --card-bg: #22252b;
     --border: #353535;
-    --flash: #ff6a6a;
-    --input-bg: #23272a;
+    --flash: #ff8a6a;
+    --input-bg: #2b2f3a;
 }
 body.dark th {
-    background: #273647;
+    background: #232a36;
 }
-body.dark pre {
-    background: #22252b;
-    border: 1px solid #222e3a;
+body.dark pre, body.dark .log-output {
+    background: #181b1e;
+    color: #eff;
+    border: 1px solid #232a36;
 }
