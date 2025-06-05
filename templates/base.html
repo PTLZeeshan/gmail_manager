@@ -2,7 +2,10 @@
 <html>
 <head>
     <title>{% block title %}Gmail Manager{% endblock %}</title>
+    <!-- Google Fonts: Inter for UI, Roboto Mono for code/logs -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -10,7 +13,7 @@
     <button id="darkModeBtn" type="button">🌙 Dark Mode</button>
   </div>
   {% block nav %}
-    <p>
+    <p style="margin-top:0.5em; font-size:1.1em;">
       <a href="{{ url_for('dashboard') }}">Dashboard</a>
       | <a href="{{ url_for('accounts') }}">Accounts</a>
       | <a href="{{ url_for('logs', logfile='manager') }}">Gmail Manager Log</a>
