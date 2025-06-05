@@ -283,16 +283,26 @@ def edit_timer(timer):
 
 @app.route('/service/<service>/<action>')
 def service_control(service, action):
+    import subprocess
     valid_actions = ['start', 'stop', 'restart', 'status']
     if service not in SERVICE_NAMES or action not in valid_actions:
         flash('Invalid service or action.')
         return redirect(url_for('dashboard'))
     unit = SERVICE_UNITS[service]
     if action == 'status':
-        out = subprocess.check_output(['sudo', 'systemctl', 'status', unit]).decode()
-        return render_template('service_status.html', service=service, status=out)
-    service_action(unit, action)
-    flash(f'{service} {action} command sent.')
+        # Use subprocess.run so non-zero codes don't cause exception
+        result = subprocess.run(
+            ['sudo', 'systemctl', 'status', unit],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
+        output = result.stdout.decode(errors="replace") if result.stdout else "(No output)"
+        return render_template('service_status.html', service=service, status=output)
+    try:
+        service_action(unit, action)
+        flash(f'{service} {action} command sent.')
+    except Exception as e:
+        flash(f'Error running {action} for {service}: {e}')
     return redirect(url_for('dashboard'))
 
 @app.route('/logs/<logfile>')
