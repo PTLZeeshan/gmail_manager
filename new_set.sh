@@ -3,7 +3,7 @@
 set -e
 
 # ======== CONFIG ========
-GITHUB_REPO="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+GITHUB_REPO="https://github.com/PTLZeeshan/gmail_manager.git"
 PROJECT_DIR="$HOME/gmail_manager"
 ACCOUNTS=("account1" "account2" "account3")
 PYTHON_VERSION=python3
