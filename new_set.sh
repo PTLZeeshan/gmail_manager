@@ -3,7 +3,7 @@
 set -e
 
 # ======== CONFIG ========
-GITHUB_REPO="https://github.com/PTLZeeshan/gmail_manager.git"
+GITHUB_REPO="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
 PROJECT_DIR="$HOME/gmail_manager"
 ACCOUNTS=("account1" "account2" "account3")
 PYTHON_VERSION=python3
@@ -78,6 +78,32 @@ done
 
 cd "$PROJECT_DIR"
 
+# ======== CREATE WRAPPER SCRIPTS (fix_wrappers.sh logic) ========
+VENV_PATH="$PROJECT_DIR/gmail_env/bin/activate"
+
+cat <<EOF > $PROJECT_DIR/run_gmail_manager.sh
+#!/bin/bash
+cd $PROJECT_DIR
+source $VENV_PATH
+python3 gmail_manager.py
+EOF
+
+cat <<EOF > $PROJECT_DIR/run_email_scanner.sh
+#!/bin/bash
+cd $PROJECT_DIR
+source $VENV_PATH
+python3 email_scanner.py
+EOF
+
+cat <<EOF > $PROJECT_DIR/run_flask_app.sh
+#!/bin/bash
+cd $PROJECT_DIR
+source $VENV_PATH
+python3 flask_app.py
+EOF
+
+chmod +x $PROJECT_DIR/run_gmail_manager.sh $PROJECT_DIR/run_email_scanner.sh $PROJECT_DIR/run_flask_app.sh
+
 # ======== SYSTEMD SERVICES & TIMERS ========
 read -p "Enter OnBootSec in minutes for gmail_manager (default 1): " on_boot_min
 read -p "Enter OnUnitActiveSec in minutes for gmail_manager (default 10): " on_unit_active_min
@@ -138,7 +164,6 @@ OnUnitActiveSec=10min
 WantedBy=timers.target
 EOF
 
-# ======== FLASK SYSTEMD SERVICE ========
 cat <<EOF | sudo tee /etc/systemd/system/flask_app.service
 [Unit]
 Description=Gmail Manager Flask Web UI
@@ -149,7 +174,7 @@ Type=simple
 User=$(whoami)
 Group=$(whoami)
 WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/gmail_env/bin/python3 $PROJECT_DIR/flask_app.py
+ExecStart=/bin/bash $PROJECT_DIR/run_flask_app.sh
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 [Install]
